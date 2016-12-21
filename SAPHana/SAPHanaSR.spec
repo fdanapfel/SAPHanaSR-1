@@ -41,6 +41,7 @@ Source12:       SAPHanaSR-showAttr
 Source13:       SAPHanaSR-testDriver
 Source14:       SAPHanaSR-monitor.8
 Source15:       SAPHanaSR-showAttr.8
+Source16:       SAPHanaSR.7
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 Requires:       pacemaker > 1.1.1
@@ -90,10 +91,12 @@ cp %{S:12} .
 cp %{S:13} .
 cp %{S:14} .
 cp %{S:15} .
+cp %{S:16} .
 gzip ocf_suse_SAPHana.7
 gzip ocf_suse_SAPHanaTopology.7
 gzip SAPHanaSR-showAttr.8
 gzip SAPHanaSR-monitor.8
+gzip SAPHanaSR.7
 
 %clean
 test "$RPM_BUILD_ROOT" != "/" && rm -rf $RPM_BUILD_ROOT
@@ -101,9 +104,11 @@ test "$RPM_BUILD_ROOT" != "/" && rm -rf $RPM_BUILD_ROOT
 %install
 mkdir -p %{buildroot}/usr/sbin
 mkdir -p %{buildroot}/usr/lib/ocf/resource.d/suse
+mkdir -p %{buildroot}/usr/lib/SAPHanaSR
 mkdir -p %{buildroot}%{_docdir}/%{name}
 mkdir -p %{buildroot}/usr/share/%{name}/tests
 mkdir -p %{buildroot}/usr/share/man/man7
+mkdir -p %{buildroot}/usr/share/man/man8
 mkdir -p %{buildroot}/srv/www/hawk/config/wizard/templates
 mkdir -p %{buildroot}/srv/www/hawk/config/wizard/workflows
 install -m 0755 SAPHana         %{buildroot}/usr/lib/ocf/resource.d/suse
@@ -115,11 +120,12 @@ install -m 0555 show_SAPHanaSR_attributes %{buildroot}/usr/share/%{name}/tests
 install -m 0555 SAPHanaSR-testDriver %{buildroot}/usr/share/%{name}/tests
 install -m 0555 SAPHanaSR-monitor %{buildroot}/usr/sbin
 install -m 0555 SAPHanaSR-showAttr %{buildroot}/usr/sbin
-install -m 0444 SAPHanaSRTools.pm %{buildroot}/usr/share/%{name}/tests
+install -m 0444 SAPHanaSRTools.pm %{buildroot}/usr/lib/SAPHanaSR
 install -m 0444 SAPHanaSR.xml   %{buildroot}/srv/www/hawk/config/wizard/templates
 install -m 0444 90-SAPHanaSR.xml  %{buildroot}/srv/www/hawk/config/wizard/workflows
 install -m 0444 ocf_suse_SAPHana.7.gz %{buildroot}/usr/share/man/man7
 install -m 0444 ocf_suse_SAPHanaTopology.7.gz %{buildroot}/usr/share/man/man7
+install -m 0444 SAPHanaSR.7.gz %{buildroot}/usr/share/man/man7
 install -m 0444 SAPHanaSR-showAttr.8.gz %{buildroot}/usr/share/man/man8
 install -m 0444 SAPHanaSR-monitor.8.gz %{buildroot}/usr/share/man/man8
 
@@ -131,6 +137,7 @@ install -m 0444 SAPHanaSR-monitor.8.gz %{buildroot}/usr/share/man/man8
 /usr/lib/ocf/resource.d/suse/SAPHana
 /usr/lib/ocf/resource.d/suse/SAPHanaTopology
 /usr/share/%{name}
+/usr/lib/%{name}
 %dir /srv/www/hawk
 %dir /srv/www/hawk/config
 %dir /srv/www/hawk/config/wizard
@@ -149,6 +156,7 @@ install -m 0444 SAPHanaSR-monitor.8.gz %{buildroot}/usr/share/man/man8
 %doc %{_docdir}/%{name}/SAPHanaSR-Setup-Guide.pdf
 %doc /usr/share/man/man7/ocf_suse_SAPHana.7.gz
 %doc /usr/share/man/man7/ocf_suse_SAPHanaTopology.7.gz
+%doc /usr/share/man/man7/SAPHanaSR.7.gz
 %doc /usr/share/man/man8/SAPHanaSR-showAttr.8.gz
 %doc /usr/share/man/man8/SAPHanaSR-monitor.8.gz
 
