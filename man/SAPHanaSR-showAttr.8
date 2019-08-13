@@ -106,7 +106,7 @@ DEMOTED makes a HANA SR secondary.
 The DEMOTED state can be transient, on the way to promoting.
 .br
 WAITING4PRIM indicates potential risk of a dual primary situation. See section
-DUPLICATE_PRIMARY_TIMEOUT of ocf_suse_SAPHana(7) and ocf_suse_SAPHanaController(7). 
+DUPLICATE_PRIMARY_TIMEOUT of ocf_suse_SAPHana(7) and ocf_suse_SAPHanaController(7).
 .PP
 .B lpa_lpt
 - last primary timestamp
@@ -136,7 +136,7 @@ The node attribute hana_<sid>_op_mode is set by SAPHanaTopology, according to th
 .B remoteHost
 - HANA SR remote host
 
-Value: [ \fIHOSTNAME\fR ] 
+Value: [ \fIHOSTNAME\fR ]
 .\" TODO [ \fIHOSTNAME\fR | \fIHANA_VIRT_HOSTNAME\fR ] ?
 
 The node attribute hana_<sid>_remoteHost is set by SAPHanaTopology, according to the running HANA.
@@ -154,7 +154,7 @@ Field 1: return code
 Value: [ 4 | 3 | 2 | 1 | 0 ]
 .br
 .\"TODO This variable is determined by
-This parameter does not tell you if the secondary system is ready for a takeover. 
+This parameter does not tell you if the secondary system is ready for a takeover.
 The meaning is different from common Linux return codes.
 .br
 4 = OK - Everything looks perfect on the HANA primary.
@@ -170,7 +170,7 @@ The meaning is different from common Linux return codes.
 see landscapeHostConfiguration.py
 .br
 
-Field 2: HANA SR role 
+Field 2: HANA SR role
 .br
 Value: [ "P"rimary | "S"econdary ]
 .br
@@ -201,7 +201,7 @@ For scale-up that four fields should be master1:master:worker:master.
 .\" TODO or ":shtdown:shtdown:shtdown"
 .PP
 .B score
-- actual master score on that node 
+- actual master score on that node
 
 Value: [ 150 | 140 | 100 | 90 | 80 | 60 | 0 | -1 | -INFINITY ]
 .\" TODO Value: for scale-out
@@ -246,7 +246,7 @@ Value: [ SOK | SFAIL | SWAIT | PRIM ]
 
 .\"TODO cluster property sync_state ?
 The cluster property sync_state is set by the SAPHana resource agent.
-The first three values are representing an HANA system replication status, 
+The first three values are representing an HANA system replication status,
 recognized at latest RA run, see ocf_suse_SAPHana(7) and systemReplicationStatus.py .
 .br
 The 4th value (PRIM) just indicates an HANA SR primary.
@@ -313,7 +313,7 @@ Usage, syntax or execution errors.
 show all SAPHanaSR attributes in the cluster and sort host table output by roles.
 .TP
 # SAPHanaSR-showAttr --sid=HA1:10 --cib=./hb_report-17-07-2019/grauenstein01/cib.xml
-show all SAPHanaSR attributes for SAP system ID HA1 and instance number 10 from given CIB file.  
+show all SAPHanaSR attributes for SAP system ID HA1 and instance number 10 from given CIB file.
 .\"
 .SH FILES
 .TP
@@ -349,7 +349,7 @@ https://help.sap.com/viewer/6b94445c94ae495c83a19646e7c3fd56/2.0.02/en-US/123f2c
 .br
 https://help.sap.com/viewer/6b94445c94ae495c83a19646e7c3fd56/2.0.03/en-US/c039a1a5b8824ecfa754b55e0caffc01.html ,
 .br
-https://help.sap.com/viewer/6b94445c94ae495c83a19646e7c3fd56/2.0.03/en-US/627bd11e86c84ec2b9fcdf585d24011c.html 
+https://help.sap.com/viewer/6b94445c94ae495c83a19646e7c3fd56/2.0.03/en-US/627bd11e86c84ec2b9fcdf585d24011c.html
 .\"
 .SH AUTHORS
 F.Herschel, L.Pinne.
