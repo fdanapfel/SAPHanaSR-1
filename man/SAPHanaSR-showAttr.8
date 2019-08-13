@@ -148,7 +148,8 @@ See also the fields Hosts and vhost.
 
 The roles field in the Hosts section has up to six sub-fields.
 .br
-1: return code
+
+Field 1: return code
 .br
 Value: [ 4 | 3 | 2 | 1 | 0 ]
 .br
@@ -168,26 +169,32 @@ The meaning is different from common Linux return codes.
 .br
 see landscapeHostConfiguration.py
 .br
-2: HANA SR role 
+
+Field 2: HANA SR role 
 .br
 Value: [ "P"rimary | "S"econdary ]
 .br
-3: node role
+
+Field 3: NameServer Config Role
 .br
 Value: [ master1 | master2 | master3 | worker | slave | standby | shtdown ]
 .br
-4: node role
+
+Field 4: NameServer Actual Role
+.br
+Value: [ master | slave | standby | shtdown ]
+.br
+
+Field 5: IndexServer Config Role
 .br
 Value: [ master1 | master2 | master3 | worker | slave | standby | shtdown ]
 .br
-5: node role
+
+Field 6: IndexServer Actual Role
 .br
-Value: [ master1 | master2 | master3 | worker | slave | standby | shtdown ]
+Value: [ master | worker | slave | standby | shtdown ]
 .br
-6: node role
-.br
-Value: [ master1 | master2 | master3 | worker | slave | standby | shtdown ]
-.br
+
 The sub-fields 3-6 are primarily useful for HANA scale-out.
 .\" scale-out: master1:master:worker:master | master1:slave:standby:standby | :shtdown:shtdown:shtdown | ... [ master1 | master2 | master3 | worker | slave | shtdown ]
 For scale-up that four fields should be master1:master:worker:master.
@@ -268,7 +275,8 @@ Value: [ \fIHANA_VIRT_HOSTNAME\fR ]
 The virtual hostname is used by the HANA instance instead of Linux hostname.
 The node attribute hana_<sid>_vhost is set by SAPHanaTopology, according to the running HANA.
 The attribute is used by the SAPHana resource agent for setting up system replication.
-See also the  fields Hosts and remoteHost.
+See also the  fields Hosts and remoteHost. SAPHanaToplogy needs the SAPHOSTAGENT to map from the local
+hostname to the HANA virtual hostname.
 .\" TODO details, see HANA global.ini
 .\"
 .SH OPTIONS
