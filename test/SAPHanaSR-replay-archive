@@ -29,7 +29,7 @@ bex=$(basename "$exe")
 case $1 in
  --help|-h)
 	echo
-	echo "usage:    $beX /path/to/pe-archive (tar.bz2)"
+	echo "usage:    $bex /path/to/pe-archive (tar.bz2)"
 	echo
 	echo "usage:    $bex [OPTION]"
 	echo " --help		show help."
