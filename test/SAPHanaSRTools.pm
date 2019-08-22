@@ -34,6 +34,7 @@ my $cibFile="";
 my $refGName;
 my $refHName;
 my $refSName;
+my $refRName;
 my $refSite;
 
 sub set_Site($)
@@ -47,6 +48,10 @@ sub set_HName($)
 sub set_GName($)
 {
    $refGName=shift();
+}
+sub set_RName($)
+{
+   $refRName=shift();
 }
 sub set_SName($)
 {
@@ -188,9 +193,9 @@ sub insertAttribute($$$$$$) {
        # printf "%-8s %-20s %-30s\n", $1, $2, $3;
 }
 ################
-sub get_hana_attributes($$$$$$$)
+sub get_hana_attributes
 {
-    my ($sid, $refHH, $refHN, $refGL, $refGN, $refST, $refSN ) = @_;
+    my ($sid, $refHH, $refHN, $refGL, $refGN, $refST, $refSN, $refRL, $refRN ) = @_;
     my %id2uname;
     my $CIB;
     if ( $cibFile eq "" ) {
@@ -205,6 +210,28 @@ while (<$CIB>) {
       # printf "CIB-time: %s\n", $1;
       insertAttribute($sid, $refGL, $refGN, "global", "cib-time", $1);
    }
+
+   # search for is-managed and maintenance attributes
+   my $id, $value;
+    if ( / name=\"?(is-managed|maintenance)\"?/ ) {
+       $name = $1;
+       if ( / id="([^\"]*)"/ ) {
+           $id=$1;
+           if ( $id =~ /([^-]*)-/ ) {
+		   $id=$1;
+           }
+       }
+       if ( / value="([^\"]*)"/ ) {
+           $value=$1;
+       }
+      if ( $id eq "cib" ) {
+	      insertAttribute($sid, $refGL, $refGN, "global", "$name", "$value");
+      } elsif ( $id eq "nodes" ) {
+              # to be processed in node section (below)
+      } else {
+	      insertAttribute($sid, $refRL, $refRN, "$id", "$name", "$value");
+      }
+    }
    my $SID=uc($sid);
    if ( $_ =~ /<node / ) {
       # catch a node definition line
@@ -224,15 +251,15 @@ while (<$CIB>) {
    #
    #  <nvpair id="nodes-1234567890-standby" name="standby" value="off"/>
    #
-   if ( $_ =~ /id="nodes-(.+)-standby"/ ) {
-       my $host=$1;
+   if ( $_ =~ /id="nodes-(.+)-(standby|maintenance)"/ ) {
+       my $host=$1; my $attribute=$2;
          if (defined $id2uname{$host}) {
              $host = $id2uname{$host}
          }
        if ( $_ =~ /value="([a-zA-Z0-9\-\_]+)"/ ) {
            my $value=$1;
 #printf "STANDBY <%s> VALUE <%s>\n", $host, $value;
-           insertAttribute($sid, $refHH, $refHN, $host, "standby", $value);
+           insertAttribute($sid, $refHH, $refHN, $host, $attribute, $value);
        }
    }
    #
@@ -653,44 +680,64 @@ sub check_all_ok($$)
 #	return 0;
 #}
 
-sub host_attr2string($$$$)
+sub host_attr2string
 {
     my $string="";
-    my ($refH, $refN, $title, $sort) = @_;
+    my ($refH, $refN, $title, $sort, $format) = @_;
     my ($len, $line_len, $hclen);
-    $hclen=$$refN{_hosts}->{_length};
-    $line_len=$hclen+1;
-    $string.=sprintf "%-$hclen.${hclen}s ", "$title";
     #
-    # headline
+    # leave function if hash is empty
+    #    in this case an empty string is returned
     #
-    foreach my $AKey (sort keys %$refN) {
-        if ($AKey ne "_hosts") {
-            $len = $$refN{$AKey}->{_length};
-            $line_len=$line_len+$len+1;
-            
-            if ( $AKey eq $sort ) {
-               $string.=sprintf "*%-$len.${len}s ", $$refN{$AKey}->{_title};
-            } else {
-               $string.=sprintf "%-$len.${len}s ", "$$refN{$AKey}->{_title}";
-            }
-        }
+    if ( ! ( keys %$refN )) {
+       return "";
     }
-    $string.=sprintf "\n";
-    $string.=sprintf "%s\n", "-" x $line_len ;
+    if ( ! defined $format) {
+        $format="script"
+    }
+    if ( $format eq "tables" ) {
+	    $hclen=$$refN{_hosts}->{_length};
+	    $line_len=$hclen+1;
+	    $string.=sprintf "%-$hclen.${hclen}s ", "$title";
+	    #
+	    # headline
+	    #
+	    foreach my $AKey (sort keys %$refN) {
+		if ($AKey ne "_hosts") {
+		    $len = $$refN{$AKey}->{_length};
+		    $line_len=$line_len+$len+1;
+		    
+		    if ( $AKey eq $sort ) {
+		       $string.=sprintf "*%-$len.${len}s ", $$refN{$AKey}->{_title};
+		    } else {
+		       $string.=sprintf "%-$len.${len}s ", "$$refN{$AKey}->{_title}";
+		    }
+		}
+	    }
+	    $string.=sprintf "\n";
+	    $string.=sprintf "%s\n", "-" x $line_len ;
+    }
     #
     # object / name / value lines
     #
     if ( $sort eq "" ) {
         foreach my $HKey (sort keys %$refH) {
-            $string.=sprintf "%-$hclen.${hclen}s ", $HKey;
+            if ( $format eq "tables" ) {
+                $string.=sprintf "%-$hclen.${hclen}s ", $HKey;
+            }
             foreach my $AKey (sort keys %$refN) {
                 if ($AKey ne "_hosts") {
                     $len = $$refN{$AKey}->{_length};
-                    $string.=sprintf "%-$len.${len}s ", $$refH{$HKey} -> {$AKey};
+                    if ( $format eq "tables" ) {
+                        $string.=sprintf "%-$len.${len}s ", $$refH{$HKey} -> {$AKey};
+                    } elsif ( $format eq "script" ) {
+                        $string.=sprintf "%s/%s/%s=\"%s\"\n", $title, $HKey, $AKey, $$refH{$HKey} -> {$AKey};
+                    }
                 }
             }
-            $string.=sprintf "\n";
+            if ( $format eq "tables" ) {
+                $string.=sprintf "\n";
+            }
         }    
     } else {
        # try to sort by site (other attrs to follow)
@@ -719,17 +766,24 @@ sub host_attr2string($$$$)
            #printf "TST: <%s> -> <%s>\n", $sortV, $StrHosts;
        }
     }
-    $string.=sprintf "\n";
+    
+    if ( $format eq "tables" ) {
+	    $string.=sprintf "\n";
+    }
     return $string;
 }
 
-sub print_host_attr($$$$)
+sub print_host_attr
 {
     my $string="";
-    my ($refH, $refN, $title, $sort) = @_;
-    my ($AKey, $HKey, $len, $line_len, $hclen);
-
-    printf "%s\n", host_attr2string($refH, $refN, $title, $sort);
+    my ($refH, $refN, $title, $sort, $format) = @_;
+    if ( ! defined $format) {
+        $format="script"
+    }
+    my $print_attributes_result = host_attr2string($refH, $refN, $title, $sort, $format);
+    if ( $print_attributes_result ) {
+        printf "%s", $print_attributes_result;
+    }
     return 0;
 }
 
