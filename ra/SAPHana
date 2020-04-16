@@ -1719,7 +1719,7 @@ function saphana_check_local_instance()
     local count=0
     local SERVNO
     local output
-    local MONITOR_SERVICES="hdbnameserver|hdbdaemon" # TODO: PRIO1: exact list of Services
+    local MONITOR_SERVICES="hdbnameserver|hdbdaemon|hdbindexserver" # TODO: PRIO1: exact list of Services
     super_ocf_log info "FLOW $FUNCNAME ($*)"
     check_sapstartsrv
     rc=$?
